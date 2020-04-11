@@ -22,19 +22,50 @@ main = do
        let player = (read input3 :: Int)
 
        let board = newBoard width height
-       printBoard board
+       turn player board
 
---Human turn
-turn 1 board 
-    | noMoves board = do putStrLn "Game finished! No moves left"
-    | otherwise = 
+--Turn
+turn player board 
+    | noMoves board = do 
+        putStrLn "Game finished! No moves left"
+        printBoard board
+    | player == 1 = do
+        printBoard board
+        col <- inputCol board
+        turn 2 (makeMove 1 col board)
+    | otherwise = do
+        col <- randomCol board
+        turn 1 (makeMove 2 col board)        
 
---Computer turn
-turn 2 board =
-    | noMoves board = do putStrLn "Game finished! No moves left"
-    | otherwise = 
+--Returns a valid column given by the user
+inputCol board = do
+    putStrLn "Column: "
+    input1 <- getLine
+    let col = (read input1 :: Int) - 1
+    if (correctCol board col) then do
+        return col
+    else do
+        putStrLn "Wrong column. Please enter again."
+        res <- inputCol board
+        return res
 
---Returns True if there are no moves left (there are no zeroes in board), False otherwise
+--Returns a valid random column
+randomCol board = do
+    col <- randInt 0 ((boardWidth board)-1)
+    if (correctCol board col) then do
+        return col
+    else do
+        res <- randomCol board
+        return res
+
+--Checks if column is valid
+correctCol board col
+    | col < 0 = False
+    | col >= (boardWidth board) = False
+    | otherwise = elem 0 (board !! col)
+
+
+--Checks if there are no moves left (there are no zeroes in board)
 noMoves board = not $ or (map (elem 0) board)
 
 randInt :: Int -> Int -> IO Int
@@ -48,13 +79,20 @@ randInt low high = do
 --Recursive board print
 printBoard' board column line
     | (column == boardWidth board -1) && (line == 0) = do
-        putStrLn (show ((board !! column) !! line))
+        putStrLn c
     | (column == boardWidth board -1) = do
-        putStrLn (show ((board !! column) !! line))
+        putStrLn c
         printBoard' board 0 (line - 1)
     | otherwise = do
-        putStr ((show ((board !! column) !! line)) ++ " ")
+        putStr $ c ++ " "
         printBoard' board (column + 1) line
+    where c = chipPrint $ (board !! column) !! line
+
+--Converts data from the board to a more readable format
+chipPrint n
+    | n == 1 = "X"
+    | n == 2 = "O"
+    | otherwise = "·"
 
 --Funció que imprimeix un board
 printBoard board = do
@@ -69,17 +107,7 @@ boardHeight board = length (board !! 0)
 --Amplada del board
 boardWidth board = length board
 
-{-
---Fa una tirada
-makeMove player column board
-    | (player /= 1) && (player /= 2) = do
-        putStrLn "ERROR: Wrong player id"
-    | (column < 0) || (column >= (boardWidth board)) = do
-        putStrLn "ERROR: Column out of bounds"
-    | not (elem 0 (board !! column)) = do
-        putStrLn "ERROR: Column is full"
-    | otherwise = (take (column - 1) board) : (addChip (board !! column) player) : (drop column board)
--}
+--New board resulting from a move
 makeMove player column board
     | column == 0 = ((addChip (board !! column) player):[])++(drop (column + 1) board)
     | column == (boardWidth board)-1 = (take (column) board)++((addChip (board !! column) player):[])
