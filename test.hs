@@ -126,52 +126,39 @@ getHeight column
     | last column /= 0 = length column
     | otherwise = getHeight $ init column
 
-{-
-getColumn board col = board !! col
-
---DOES NOT CHECK IF COLUMN IS FULL (or out of bounds)
-getRow board col = map (!! n) board
-    where n = getHeight $ board !! col
--}
-
---Returns the ascending diagonal
-getUpDiag board col = (getUpDiag' board (col + n) (row + n)) ++ []
-    where 
-        row = getHeight $ board !! col
-        n = -1 + min ((boardWidth board) - col) ((boardHeight board) - row)
-
---Recursive upDiagonal
-getUpDiag' board col row
-    | (col == 0) || (row == 0) = (boardPos board col row):[]
-    | otherwise = (getUpDiag' board (col-1) (row-1)) ++ ((boardPos board col row):[])
-
---Returns the descending diagonal
-getDownDiag board col = (getDownDiag' board (col + n) (row - n)) ++ []
-    where 
-        row = getHeight $ board !! col
-        n = min 3 (-1 + min ((boardWidth board) - col) (row + 1))
-
---Recursive downDiagonal
-getDownDiag' board col row
-    | (col == 0) || (row == (boardHeight board) - 1) = (boardPos board col row):[]
-    | otherwise = (getDownDiag' board (col-1) (row+1)) ++ ((boardPos board col row):[])
-
---------------------
-
-gVert board col player = under ++ (-player):over
+--Returns column elements (with distance <= 3)
+getCol board col player = under ++ (-player):over
     where
         n = board !! col
         row = getHeight n
         over = take 3 $ drop (row + 1) n
         under = reverse $ take 3 $ reverse $ take row n
 
-gRow board col player = left ++ (-player):right
+--Returns row elements (with distance <= 3)
+getRow board col player = left ++ (-player):right
     where 
         row = getHeight $ board !! col
         n = map (!! row) board
         right = take 3 $ drop (col + 1) n
         left = reverse $ take 3 $ reverse $ take col n
 
-gUpDiag board col player =
+--Returns increasing diagonal elements (with distance <= 3)
+getUpDiag board col player = left ++ (-player):right
     where
         row = getHeight $ board !! col
+        left = getDiagRec board (col-1) (row-1) (-1) (-1) 3
+        right = getDiagRec board (col+1) (row+1) 1 1 3
+
+--Returns decreasing diagonal elements (with distance <= 3)
+getDownDiag board col player = left ++ (-player):right
+    where
+        row = getHeight $ board !! col
+        left = getDiagRec board (col-1) (row+1) (-1) 1 3
+        right = getDiagRec board (col+1) (row-1) 1 (-1) 3
+
+--Auxiliary recursive function to get diagonal elements
+getDiagRec board col row dCol dRow count
+    | (col<0) || (row<0) || (col>=boardWidth board) || (row>=boardHeight board) = []
+    | (count==1) || (col==0) || (row==0) || ((col+1)==boardWidth board) || ((row+1)==boardHeight board) = (boardPos board col row):[]
+    | dCol < 0 = (getDiagRec board (col+dCol) (row+dRow) dCol dRow (count-1))++(boardPos board col row):[]
+    | otherwise = ((boardPos board col row):[])++(getDiagRec board (col+dCol) (row+dRow) dCol dRow (count-1))
