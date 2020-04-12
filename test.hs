@@ -23,20 +23,26 @@ main = do
        let player = (read input3 :: Int)
 
        let board = newBoard width height
-       turn player board
+       turn player board (width * height)
 
 --Turn
-turn player board 
-    | noMoves board = do 
+turn player board movesLeft
+    | movesLeft == 0 = do 
         putStrLn "Game finished! No moves left"
         printBoard board
     | player == 1 = do
         printBoard board
         col <- inputCol board
-        turn 2 (makeMove 1 col board)
+        if (makesFour board col player) then do
+            turn 2 (makeMove 1 col board) 0
+        else do
+            turn 2 (makeMove 1 col board) (movesLeft-1)
     | otherwise = do
         col <- randomCol board
-        turn 1 (makeMove 2 col board)        
+        if (makesFour board col player) then do
+            turn 1 (makeMove 2 col board) 0
+        else do
+            turn 1 (makeMove 2 col board) (movesLeft-1)
 
 --Returns a valid column given by the user
 inputCol board = do
@@ -65,7 +71,7 @@ correctCol board col
     | col >= (boardWidth board) = False
     | otherwise = elem 0 (board !! col)
 
---Checks if there are no moves left (there are no zeroes in board)
+--DEPRECATED Checks if there are no moves left (there are no zeroes in board)
 noMoves board = not $ or (map (elem 0) board)
 
 randInt :: Int -> Int -> IO Int
@@ -162,3 +168,17 @@ getDiagRec board col row dCol dRow count
     | (count==1) || (col==0) || (row==0) || ((col+1)==boardWidth board) || ((row+1)==boardHeight board) = (boardPos board col row):[]
     | dCol < 0 = (getDiagRec board (col+dCol) (row+dRow) dCol dRow (count-1))++(boardPos board col row):[]
     | otherwise = ((boardPos board col row):[])++(getDiagRec board (col+dCol) (row+dRow) dCol dRow (count-1))
+
+makesFour board col player = (makesFour' h player) || (makesFour' v player) || (makesFour' uD player) || (makesFour' dD player)
+    where
+        h = map abs $ getRow board col player
+        v = map abs $ getCol board col player
+        uD = map abs $ getUpDiag board col player
+        dD = map abs $ getDownDiag board col player
+
+makesFour' line player
+    | (length line) < 4 = False
+    | (length line) == 4 = (line == target)
+    | otherwise = (take 4 line == target) || (makesFour' (tail line) player)
+    where
+        target = replicate 4 player
