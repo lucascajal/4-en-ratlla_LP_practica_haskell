@@ -1,6 +1,7 @@
 import System.Random
 
 --IMPORTANT: Per representar el board farem una matriu, on tindrem columnes x files! (invers)
+-- a = [[1,0,0,0],[1,1,0,0],[1,1,1,0],[0,0,0,0],[1,1,1,1]]
 
 main :: IO ()
 -- main program to play the game
@@ -64,7 +65,6 @@ correctCol board col
     | col >= (boardWidth board) = False
     | otherwise = elem 0 (board !! col)
 
-
 --Checks if there are no moves left (there are no zeroes in board)
 noMoves board = not $ or (map (elem 0) board)
 
@@ -86,7 +86,7 @@ printBoard' board column line
     | otherwise = do
         putStr $ c ++ " "
         printBoard' board (column + 1) line
-    where c = chipPrint $ (board !! column) !! line
+    where c = chipPrint $ boardPos board column line
 
 --Converts data from the board to a more readable format
 chipPrint n
@@ -100,6 +100,8 @@ printBoard board = do
 
 --Creadora d'un board sense fitxes
 newBoard width height = replicate width (replicate height 0)
+
+boardPos board c l = (board !! c) !! l
 
 --Alçada del board
 boardHeight board = length (board !! 0)
@@ -117,3 +119,59 @@ makeMove player column board
 addChip list player
     | (head list) == 0 = player:(tail list)
     | otherwise = (head list):(addChip (tail list) player)
+
+--Returns the height of the column
+getHeight column
+    | null column = 0
+    | last column /= 0 = length column
+    | otherwise = getHeight $ init column
+
+{-
+getColumn board col = board !! col
+
+--DOES NOT CHECK IF COLUMN IS FULL (or out of bounds)
+getRow board col = map (!! n) board
+    where n = getHeight $ board !! col
+-}
+
+--Returns the ascending diagonal
+getUpDiag board col = (getUpDiag' board (col + n) (row + n)) ++ []
+    where 
+        row = getHeight $ board !! col
+        n = -1 + min ((boardWidth board) - col) ((boardHeight board) - row)
+
+--Recursive upDiagonal
+getUpDiag' board col row
+    | (col == 0) || (row == 0) = (boardPos board col row):[]
+    | otherwise = (getUpDiag' board (col-1) (row-1)) ++ ((boardPos board col row):[])
+
+--Returns the descending diagonal
+getDownDiag board col = (getDownDiag' board (col + n) (row - n)) ++ []
+    where 
+        row = getHeight $ board !! col
+        n = min 3 (-1 + min ((boardWidth board) - col) (row + 1))
+
+--Recursive downDiagonal
+getDownDiag' board col row
+    | (col == 0) || (row == (boardHeight board) - 1) = (boardPos board col row):[]
+    | otherwise = (getDownDiag' board (col-1) (row+1)) ++ ((boardPos board col row):[])
+
+--------------------
+
+gVert board col player = under ++ (-player):over
+    where
+        n = board !! col
+        row = getHeight n
+        over = take 3 $ drop (row + 1) n
+        under = reverse $ take 3 $ reverse $ take row n
+
+gRow board col player = left ++ (-player):right
+    where 
+        row = getHeight $ board !! col
+        n = map (!! row) board
+        right = take 3 $ drop (col + 1) n
+        left = reverse $ take 3 $ reverse $ take col n
+
+gUpDiag board col player =
+    where
+        row = getHeight $ board !! col
