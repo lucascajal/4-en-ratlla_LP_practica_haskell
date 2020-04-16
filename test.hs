@@ -3,6 +3,26 @@ import System.Random
 --IMPORTANT: Per representar el board farem una matriu, on tindrem columnes x files! (invers)
 -- a = [[1,0,0,0],[1,1,0,0],[1,1,1,0],[0,0,0,0],[1,1,1,1]]
 
+{- 
+b = [[0,0,0,0,0,0,0],[2,2,1,2,2,0,0],[1,2,1,1,2,0,0],[2,0,0,0,0,0,0],[1,0,0,0,0,0,0],[1,0,0,0,0,0,0],[0,0,0,0,0,0,0],[0,0,0,0,0,0,0]]
+· · · · · · · ·
+· · · · · · · ·
+· O O · · · · ·
+· O X · · · · ·
+· X X · · · · ·
+· O O · · · · ·
+· O X O X X · ·
+
+b = [[0,0,0,0,0,0,0],[2,2,1,2,2,0,0],[1,2,1,1,2,0,0],[2,0,0,0,0,0,0],[1,0,0,0,0,0,0],[1,0,0,0,0,0,0],[1,0,0,0,0,0,0],[0,0,0,0,0,0,0]]
+· · · · · · · ·
+· · · · · · · ·
+· O O · · · · ·
+· O X · · · · ·
+· X X · · · · ·
+· O O · · · · ·
+· O X O X X X ·
+-}
+
 {- Smart ideas:
     - Calculate +1 element in row if both sides are free (just when having 3 chips?)
     - Toss chips where they have space avaliable arround them (minimum 4, ideal 7) in all directions
@@ -52,7 +72,8 @@ turn player board movesLeft
             turn 2 (makeMove 1 col board) (movesLeft-1)
     | otherwise = do
         --col <- randomCol board
-        let col = greedyCol board
+        --let col = greedyCol board
+        let col = smartCol board
         if (makesN board col player 4) then do
             turn 1 (makeMove 2 col board) (-2)
         else do
@@ -84,19 +105,40 @@ greedyCol board
     | not $ null wewin = head wewin
     | not $ null make3noLoss = head make3noLoss
     | not $ null make2noLoss = head make2noLoss
-    | not $ null enemywins = head enemywins
+    | not $ null stopEnemyWin = head stopEnemyWin
     | not $ null make3 = head make3
     | not $ null make2 = head make2
     | otherwise = head cols
 
     where
         cols = [x | x <- [0..((boardWidth board)-1)], (correctCol board x)]
-        enemywins = [x | x <- cols, (makesN board x 1 4)]
+        stopEnemyWin = [x | x <- cols, (makesN board x 1 4)]
         wewin = [x | x <- cols, (makesN board x 2 4)]
         make3 = [x | x <- cols, (makesN board x 2 3)]
         make2 = [x | x <- cols, (makesN board x 2 2)]
-        make3noLoss = [x | x <- make3, (x `elem` enemywins)]
-        make2noLoss = [x | x <- make2, (x `elem` enemywins)]
+        make3noLoss = [x | x <- make3, (x `elem` stopEnemyWin)]
+        make2noLoss = [x | x <- make2, (x `elem` stopEnemyWin)]
+
+--Returns a valid column selected by the smart algorithm
+smartCol board
+    | not $ null weWin = head weWin
+    | not $ null make3noLoss = head make3noLoss
+    | not $ null make2noLoss = head make2noLoss
+    | not $ null stopEnemyWin = head stopEnemyWin
+    | not $ null make3 = head make3
+    | not $ null make2 = head make2
+    | otherwise = head cols
+
+    where
+        cols = [x | x <- [0..((boardWidth board)-1)], (correctCol board x)]
+        topLoss = [x | x <- cols, makesNsmart (makeMove 2 x board) x 1 4 , (correctCol (makeMove 2 x board) x)]
+        safeCols = [x | x <- cols, not (x `elem` topLoss)]
+        stopEnemyWin = [x | x <- cols, makesNsmart board x 1 4]
+        weWin = [x | x <- cols, makesNsmart board x 2 4]
+        make3 = [x | x <- safeCols, makesNsmart board x 2 3]
+        make2 = [x | x <- safeCols, makesNsmart board x 2 2]
+        make3noLoss = [x | x <- make3, (x `elem` stopEnemyWin)]
+        make2noLoss = [x | x <- make2, (x `elem` stopEnemyWin)]
 
 --Checks if column is valid
 correctCol board col
@@ -140,6 +182,7 @@ printBoard board = do
 --Creadora d'un board sense fitxes
 newBoard width height = replicate width (replicate height 0)
 
+--Retorna el valor de la posició indicada al tauler (0, 1 o 2)
 boardPos board c l = (board !! c) !! l
 
 --Alçada del board
@@ -214,7 +257,42 @@ makesN board col player n = (makesN' h player n) || (makesN' v player n) || (mak
 makesN' :: [Int] -> Int -> Int -> Bool
 makesN' line player n
     | (length line) < n = False
-    | (length line) == n = (line == target)
-    | otherwise = (take n line == target)|| (makesN' (tail line) player n)
+    | otherwise = (take n line == target) || (makesN' (tail line) player n)
     where
         target = replicate n player
+
+--Modified makesN: When line has free space on both sides, adds one; when space avaliable <4 discards line 
+makesNsmart :: [[Int]] -> Int -> Int -> Int -> Bool
+makesNsmart board col player n = (makesNsmart' h player n 0) || (makesNsmart' v player n 0) || (makesNsmart' uD player n 0) || (makesNsmart' dD player n 0)
+    where
+        h = map abs $ getRow board col player
+        v = map abs $ getCol board col player
+        uD = map abs $ getUpDiag board col player
+        dD = map abs $ getDownDiag board col player
+
+makesNsmart' :: [Int] -> Int -> Int -> Int -> Bool
+makesNsmart' line player n desp
+    | length line < 4 = False
+    | length recLine < n = False
+    | otherwise = (take n recLine == target) || (take (n+1) recLine == smartTarget) || (makesNsmart' line player n (desp+1))
+    where
+        target = replicate n player
+        smartTarget = [0] ++ (drop 1 target) ++ [0]
+        recLine = drop desp line
+{-
+--Returns smart max line size for a column move: When line has free space on both sides, adds one; when space avaliable <4 discards line 
+maxLine :: [[Int]] -> Int -> Int -> Int
+maxLine board col player = maximum vec
+    where
+        h = map abs $ getRow board col player
+        v = map abs $ getCol board col player
+        uD = map abs $ getUpDiag board col player
+        dD = map abs $ getDownDiag board col player
+        vec = [(maxLine' h player), (maxLine' v player), (maxLine' uD player), (maxLine' dD player)]
+    
+maxLine' :: [Int] -> Int -> Int
+maxLine' line player
+    | (length line) < 4 = 0
+    | (head line == 0) && (last line == 0) = (div (sum line) player) + 1
+    | otherwise = div (sum line) player
+-}
