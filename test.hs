@@ -170,30 +170,30 @@ getCol board col player = under ++ (-player):over
     where
         n = board !! col
         row = getHeight n
-        over = take 3 $ drop (row + 1) n
-        under = reverse $ take 3 $ reverse $ take row n
+        over = takeWhile (\x -> (x==0) || (x==player)) $ take 3 $ drop (row + 1) n
+        under = reverse $ takeWhile (\x -> (x==0) || (x==player)) $ take 3 $ reverse $ take row n
 
 --Returns row elements (with distance <= 3)
 getRow board col player = left ++ (-player):right
     where 
         row = getHeight $ board !! col
         n = map (!! row) board
-        right = take 3 $ drop (col + 1) n
-        left = reverse $ take 3 $ reverse $ take col n
+        right = takeWhile (\x -> (x==0) || (x==player)) $ take 3 $ drop (col + 1) n
+        left = reverse $ takeWhile (\x -> (x==0) || (x==player)) $ take 3 $ reverse $ take col n
 
 --Returns increasing diagonal elements (with distance <= 3)
 getUpDiag board col player = left ++ (-player):right
     where
         row = getHeight $ board !! col
-        left = getDiagRec board (col-1) (row-1) (-1) (-1) 3
-        right = getDiagRec board (col+1) (row+1) 1 1 3
+        left = reverse $ takeWhile (\x -> (x==0) || (x==player)) $ reverse $ getDiagRec board (col-1) (row-1) (-1) (-1) 3
+        right = takeWhile (\x -> (x==0) || (x==player)) $ getDiagRec board (col+1) (row+1) 1 1 3
 
 --Returns decreasing diagonal elements (with distance <= 3)
 getDownDiag board col player = left ++ (-player):right
     where
         row = getHeight $ board !! col
-        left = getDiagRec board (col-1) (row+1) (-1) 1 3
-        right = getDiagRec board (col+1) (row-1) 1 (-1) 3
+        left = reverse $ takeWhile (\x -> (x==0) || (x==player)) $ reverse $ getDiagRec board (col-1) (row+1) (-1) 1 3
+        right = takeWhile (\x -> (x==0) || (x==player)) $ getDiagRec board (col+1) (row-1) 1 (-1) 3
 
 --Auxiliary recursive function to get diagonal elements
 getDiagRec board col row dCol dRow count
@@ -206,17 +206,15 @@ getDiagRec board col row dCol dRow count
 makesN :: [[Int]] -> Int -> Int -> Int -> Bool
 makesN board col player n = (makesN' h player n) || (makesN' v player n) || (makesN' uD player n) || (makesN' dD player n)
     where
-        h = getRow board col player
-        v = getCol board col player
-        uD = getUpDiag board col player
-        dD = getDownDiag board col player
+        h = map abs $ getRow board col player
+        v = map abs $ getCol board col player
+        uD = map abs $ getUpDiag board col player
+        dD = map abs $ getDownDiag board col player
 
 makesN' :: [Int] -> Int -> Int -> Bool
 makesN' line player n
     | (length line) < n = False
-    | (length line) == n = (absLine == target)
-    | otherwise = ((map abs firstN == target) && (elem (-player) firstN))|| (makesN' (tail line) player n)
+    | (length line) == n = (line == target)
+    | otherwise = (take n line == target)|| (makesN' (tail line) player n)
     where
         target = replicate n player
-        absLine = map abs $ line
-        firstN = take n line
