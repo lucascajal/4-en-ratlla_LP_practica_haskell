@@ -3,13 +3,20 @@ import System.Random
 --IMPORTANT: Per representar el board farem una matriu, on tindrem columnes x files! (invers)
 -- a = [[1,0,0,0],[1,1,0,0],[1,1,1,0],[0,0,0,0],[1,1,1,1]]
 
+{- Smart ideas:
+    - Calculate +1 element in row if both sides are free (just when having 3 chips?)
+    - Toss chips where they have space avaliable arround them (minimum 4, ideal 7) in all directions
+    - Count free spaces continuing a line as half points?
+    - When tossing a chip, check that the move won't let the adversari win by putting one on top
+-}
+
 main :: IO ()
 -- main program to play the game
 main = do
-       putStrLn "Board width: "
-       input1 <- getLine
        putStrLn "Board height: " 
        input2 <- getLine
+       putStrLn "Board width: "
+       input1 <- getLine
 
        let width = (read input1 :: Int)
        let height = (read input2 :: Int)
@@ -28,19 +35,26 @@ main = do
 --Turn
 turn player board movesLeft
     | movesLeft == 0 = do 
-        putStrLn "Game finished! No moves left"
+        putStrLn "Game ended in tie! No moves left"
+        printBoard board
+    | movesLeft == -1 = do 
+        putStrLn "You are the winner!!!"
+        printBoard board
+    | movesLeft == -2 = do 
+        putStrLn "Game lost :( you were crashed by a machine!"
         printBoard board
     | player == 1 = do
         printBoard board
         col <- inputCol board
-        if (makesFour board col player) then do
-            turn 2 (makeMove 1 col board) 0
+        if (makesN board col player 4) then do
+            turn 2 (makeMove 1 col board) (-1)
         else do
             turn 2 (makeMove 1 col board) (movesLeft-1)
     | otherwise = do
-        col <- randomCol board
-        if (makesFour board col player) then do
-            turn 1 (makeMove 2 col board) 0
+        --col <- randomCol board
+        let col = greedyCol board
+        if (makesN board col player 4) then do
+            turn 1 (makeMove 2 col board) (-2)
         else do
             turn 1 (makeMove 2 col board) (movesLeft-1)
 
@@ -64,6 +78,25 @@ randomCol board = do
     else do
         res <- randomCol board
         return res
+
+--Returns a valid column selected by a greedy algorithm
+greedyCol board 
+    | not $ null wewin = head wewin
+    | not $ null make3noLoss = head make3noLoss
+    | not $ null make2noLoss = head make2noLoss
+    | not $ null enemywins = head enemywins
+    | not $ null make3 = head make3
+    | not $ null make2 = head make2
+    | otherwise = head cols
+
+    where
+        cols = [x | x <- [0..((boardWidth board)-1)], (correctCol board x)]
+        enemywins = [x | x <- cols, (makesN board x 1 4)]
+        wewin = [x | x <- cols, (makesN board x 2 4)]
+        make3 = [x | x <- cols, (makesN board x 2 3)]
+        make2 = [x | x <- cols, (makesN board x 2 2)]
+        make3noLoss = [x | x <- make3, (x `elem` enemywins)]
+        make2noLoss = [x | x <- make2, (x `elem` enemywins)]
 
 --Checks if column is valid
 correctCol board col
@@ -169,16 +202,21 @@ getDiagRec board col row dCol dRow count
     | dCol < 0 = (getDiagRec board (col+dCol) (row+dRow) dCol dRow (count-1))++(boardPos board col row):[]
     | otherwise = ((boardPos board col row):[])++(getDiagRec board (col+dCol) (row+dRow) dCol dRow (count-1))
 
-makesFour board col player = (makesFour' h player) || (makesFour' v player) || (makesFour' uD player) || (makesFour' dD player)
+--Checks if, given a player, board, column and target line size, a move of the player to the column makes him achieve a linesize of 4 
+makesN :: [[Int]] -> Int -> Int -> Int -> Bool
+makesN board col player n = (makesN' h player n) || (makesN' v player n) || (makesN' uD player n) || (makesN' dD player n)
     where
-        h = map abs $ getRow board col player
-        v = map abs $ getCol board col player
-        uD = map abs $ getUpDiag board col player
-        dD = map abs $ getDownDiag board col player
+        h = getRow board col player
+        v = getCol board col player
+        uD = getUpDiag board col player
+        dD = getDownDiag board col player
 
-makesFour' line player
-    | (length line) < 4 = False
-    | (length line) == 4 = (line == target)
-    | otherwise = (take 4 line == target) || (makesFour' (tail line) player)
+makesN' :: [Int] -> Int -> Int -> Bool
+makesN' line player n
+    | (length line) < n = False
+    | (length line) == n = (absLine == target)
+    | otherwise = ((map abs firstN == target) && (elem (-player) firstN))|| (makesN' (tail line) player n)
     where
-        target = replicate 4 player
+        target = replicate n player
+        absLine = map abs $ line
+        firstN = take n line
