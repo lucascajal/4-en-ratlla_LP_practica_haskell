@@ -1,25 +1,6 @@
 import System.Random
 
---IMPORTANT: Per representar el board farem una matriu, on tindrem columnes x files! (invers)
-
-{- 
-b = [[2,2,1,2,1,0],[1,2,1,2,2,1],[0,0,0,0,0,0],[2,2,1,1,1,2],[1,2,1,1,2,1],[0,0,0,0,0,0],[1,2,1,2,2,1]]
-· X · O X · X
-X O · X O · O
-O O · X X · O
-X X · X X · X
-O O · O O · O
-O X · O X · X
--}
-
-{- Smart ideas:
-    - Calculate +1 element in row if both sides are free (just when having 3 chips?)
-    - Toss chips where they have space avaliable arround them (minimum 4, ideal 7) in all directions
-    - Count free spaces continuing a line as half points?
-    - When tossing a chip, check that the move won't let the adversari win by putting one on top
--}
-
-main :: IO ()
+--main :: IO Char
 -- main program to play the game
 main = do
        putStrLn "Board height: " 
@@ -41,6 +22,7 @@ main = do
        let board = newBoard width height
        turn player board (width * height)
 
+--turn :: Int -> [[Int]] -> Int -> IO Char
 --Turn
 turn player board movesLeft
     | movesLeft == 0 = do 
@@ -55,6 +37,7 @@ turn player board movesLeft
     | player == 1 = do
         printBoard board
         col <- inputCol board
+        --let col = smartCol' board
         if (makesN board col player 4) then do
             turn 2 (makeMove 1 col board) (-1)
         else do
@@ -62,17 +45,19 @@ turn player board movesLeft
     | otherwise = do
         --col <- randomCol board
         --let col = greedyCol board
+        --threadDelay 1000
         let col = smartCol board
         if (makesN board col player 4) then do
             turn 1 (makeMove 2 col board) (-2)
         else do
             turn 1 (makeMove 2 col board) (movesLeft-1)
 
+inputCol :: [[Int]] -> IO Int
 --Returns a valid column given by the user
 inputCol board = do
     putStrLn "Column: "
     input1 <- getLine
-    let col = (read input1 :: Int) - 1
+    let col = (read input1 :: Int)
     if (correctCol board col) then do
         return col
     else do
@@ -80,6 +65,7 @@ inputCol board = do
         res <- inputCol board
         return res
 
+randomCol :: [[Int]] -> IO Int
 --Returns a valid random column
 randomCol board = do
     col <- randInt 0 ((boardWidth board)-1)
@@ -89,6 +75,7 @@ randomCol board = do
         res <- randomCol board
         return res
 
+greedyCol :: [[Int]] -> Int
 --Returns a valid column selected by a greedy algorithm
 greedyCol board 
     | not $ null wewin = head wewin
@@ -108,6 +95,7 @@ greedyCol board
         make3noLoss = [x | x <- make3, (x `elem` stopEnemyWin)]
         make2noLoss = [x | x <- make2, (x `elem` stopEnemyWin)]
 
+smartCol :: [[Int]] -> Int
 --Returns a valid column selected by the smart algorithm
 smartCol board
     | not $ null weWin = middle weWin board
@@ -156,9 +144,11 @@ smartCol board
         make3safeStop = intersect make3 safeStopEnemyWin
         make2safeStop = intersect make2 safeStopEnemyWin
 
+intersect :: [Int] -> [Int] -> [Int]
 --List intersection operator
 intersect a b = [x | x <- a, x `elem` b]
 
+middle :: [Int] -> [[Int]] -> Int
 --Return the column in list closest to the center of the board
 middle a board
     | m `elem` a = m
@@ -166,6 +156,7 @@ middle a board
     where
         m = (boardWidth board) `div` 2
 
+middle' :: [Int] -> Int -> Int -> Int
 middle' a m min
     | null a = min
     | otherwise = middle' (tail a) m newMin
@@ -175,14 +166,12 @@ middle' a m min
         hDiff = abs (m - h)
         newMin = if (minDiff <= hDiff) then min else h
 
+correctCol :: [[Int]] -> Int -> Bool
 --Checks if column is valid
 correctCol board col
     | col < 0 = False
     | col >= (boardWidth board) = False
     | otherwise = elem 0 (board !! col)
-
---DEPRECATED Checks if there are no moves left (there are no zeroes in board)
-noMoves board = not $ or (map (elem 0) board)
 
 randInt :: Int -> Int -> IO Int
 -- randInt low high is an IO action that returns a
@@ -192,6 +181,7 @@ randInt low high = do
     let result = low + random `mod` (high - low + 1)
     return result
 
+--printBoard' :: [[Int]] -> Int -> Int -> IO Char
 --Recursive board print
 printBoard' board column line
     | (column == boardWidth board -1) && (line == 0) = do
@@ -204,45 +194,56 @@ printBoard' board column line
         printBoard' board (column + 1) line
     where c = chipPrint $ boardPos board column line
 
+--chipPrint :: Int -> Char
 --Converts data from the board to a more readable format
 chipPrint n
     | n == 1 = "X"
     | n == 2 = "O"
     | otherwise = "·"
 
+--printBoard :: [[Int]] -> IO Char
 --Funció que imprimeix un board
 printBoard board = do
+    putStrLn "0 1 2 3 4 5 6 7 8 9"
     printBoard' board 0 ((boardHeight board) - 1)
 
+newBoard :: Int -> Int -> [[Int]]
 --Creadora d'un board sense fitxes
 newBoard width height = replicate width (replicate height 0)
 
+boardPos :: [[Int]] -> Int -> Int -> Int
 --Retorna el valor de la posició indicada al tauler (0, 1 o 2)
 boardPos board c l = (board !! c) !! l
 
+boardHeight :: [[Int]] -> Int
 --Alçada del board
 boardHeight board = length (board !! 0)
 
+boardWidth :: [[Int]] -> Int
 --Amplada del board
 boardWidth board = length board
 
+makeMove :: Int -> Int -> [[Int]] -> [[Int]]
 --New board resulting from a move
 makeMove player column board
     | column == 0 = ((addChip (board !! column) player):[])++(drop (column + 1) board)
     | column == (boardWidth board)-1 = (take (column) board)++((addChip (board !! column) player):[])
     | otherwise = (take (column) board)++((addChip (board !! column) player):[])++(drop (column + 1) board)
 
+addChip :: [Int] -> Int -> [Int]
 --Auxiliar de makeMove per afegir una fitxa a una columna
 addChip list player
     | (head list) == 0 = player:(tail list)
     | otherwise = (head list):(addChip (tail list) player)
 
+getHeight :: [Int] -> Int
 --Returns the height of the column
 getHeight column
     | null column = 0
     | last column /= 0 = length column
     | otherwise = getHeight $ init column
 
+getCol :: [[Int]] -> Int -> Int -> [Int]
 --Returns column elements (with distance <= 3)
 getCol board col player = under ++ (-player):over
     where
@@ -251,6 +252,7 @@ getCol board col player = under ++ (-player):over
         over = takeWhile (\x -> (x==0) || (x==player)) $ take 3 $ drop (row + 1) n
         under = reverse $ takeWhile (\x -> (x==0) || (x==player)) $ take 3 $ reverse $ take row n
 
+getRow :: [[Int]] -> Int -> Int -> [Int]
 --Returns row elements (with distance <= 3)
 getRow board col player = left ++ (-player):right
     where 
@@ -259,6 +261,7 @@ getRow board col player = left ++ (-player):right
         right = takeWhile (\x -> (x==0) || (x==player)) $ take 3 $ drop (col + 1) n
         left = reverse $ takeWhile (\x -> (x==0) || (x==player)) $ take 3 $ reverse $ take col n
 
+getUpDiag :: [[Int]] -> Int -> Int -> [Int]
 --Returns increasing diagonal elements (with distance <= 3)
 getUpDiag board col player = left ++ (-player):right
     where
@@ -266,6 +269,7 @@ getUpDiag board col player = left ++ (-player):right
         left = reverse $ takeWhile (\x -> (x==0) || (x==player)) $ reverse $ getDiagRec board (col-1) (row-1) (-1) (-1) 3
         right = takeWhile (\x -> (x==0) || (x==player)) $ getDiagRec board (col+1) (row+1) 1 1 3
 
+getDownDiag :: [[Int]] -> Int -> Int -> [Int]
 --Returns decreasing diagonal elements (with distance <= 3)
 getDownDiag board col player = left ++ (-player):right
     where
@@ -273,6 +277,7 @@ getDownDiag board col player = left ++ (-player):right
         left = reverse $ takeWhile (\x -> (x==0) || (x==player)) $ reverse $ getDiagRec board (col-1) (row+1) (-1) 1 3
         right = takeWhile (\x -> (x==0) || (x==player)) $ getDiagRec board (col+1) (row-1) 1 (-1) 3
 
+getDiagRec :: [[Int]] -> Int -> Int -> Int -> Int -> Int -> [Int]
 --Auxiliary recursive function to get diagonal elements
 getDiagRec board col row dCol dRow count
     | (col<0) || (row<0) || (col>=boardWidth board) || (row>=boardHeight board) = []
@@ -280,8 +285,8 @@ getDiagRec board col row dCol dRow count
     | dCol < 0 = (getDiagRec board (col+dCol) (row+dRow) dCol dRow (count-1))++(boardPos board col row):[]
     | otherwise = ((boardPos board col row):[])++(getDiagRec board (col+dCol) (row+dRow) dCol dRow (count-1))
 
---Checks if, given a player, board, column and target line size, a move of the player to the column makes him achieve a linesize of n4 
 makesN :: [[Int]] -> Int -> Int -> Int -> Bool
+--Checks if, given a player, board, column and target line size, a move of the player to the column makes him achieve a linesize of n4 
 makesN board col player n = (makesN' h player n) || (makesN' v player n) || (makesN' uD player n) || (makesN' dD player n)
     where
         h = map abs $ getRow board col player
@@ -296,8 +301,8 @@ makesN' line player n
     where
         target = replicate n player
 
---Modified makesN: discards if avaliable space is <4 
 makesNsmart :: [[Int]] -> Int -> Int -> Int -> Bool
+--Modified makesN: discards if avaliable space is <4
 makesNsmart board col player n = (makesNsmart' h player n 0) || (makesNsmart' v player n 0) || (makesNsmart' uD player n 0) || (makesNsmart' dD player n 0)
     where
         h = map abs $ getRow board col player
@@ -314,8 +319,8 @@ makesNsmart' line player n desp
         target = replicate n player
         recLine = drop desp line
 
---Modified makesNsmart: When line has free space on both sides, adds one; when space avaliable <4 discards line 
 makesNspaced :: [[Int]] -> Int -> Int -> Int -> Bool
+--Modified makesNsmart: When line has free space on both sides, adds one; when space avaliable <4 discards line 
 makesNspaced board col player n = (makesNspaced' h player n 0) || (makesNspaced' v player n 0) || (makesNspaced' uD player n 0) || (makesNspaced' dD player n 0)
     where
         h = map abs $ getRow board col player
@@ -331,20 +336,3 @@ makesNspaced' line player n desp
     where
         smartTarget = [0] ++ (replicate n player) ++ [0]
         recLine = drop desp line
-{-
---Returns smart max line size for a column move: When line has free space on both sides, adds one; when space avaliable <4 discards line 
-maxLine :: [[Int]] -> Int -> Int -> Int
-maxLine board col player = maximum vec
-    where
-        h = map abs $ getRow board col player
-        v = map abs $ getCol board col player
-        uD = map abs $ getUpDiag board col player
-        dD = map abs $ getDownDiag board col player
-        vec = [(maxLine' h player), (maxLine' v player), (maxLine' uD player), (maxLine' dD player)]
-    
-maxLine' :: [Int] -> Int -> Int
-maxLine' line player
-    | (length line) < 4 = 0
-    | (head line == 0) && (last line == 0) = (div (sum line) player) + 1
-    | otherwise = div (sum line) player
--}
