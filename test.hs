@@ -1,26 +1,15 @@
 import System.Random
 
 --IMPORTANT: Per representar el board farem una matriu, on tindrem columnes x files! (invers)
--- a = [[1,0,0,0],[1,1,0,0],[1,1,1,0],[0,0,0,0],[1,1,1,1]]
 
 {- 
-b = [[0,0,0,0,0,0,0],[2,2,1,2,2,0,0],[1,2,1,1,2,0,0],[2,0,0,0,0,0,0],[1,0,0,0,0,0,0],[1,0,0,0,0,0,0],[0,0,0,0,0,0,0],[0,0,0,0,0,0,0]]
-· · · · · · · ·
-· · · · · · · ·
-· O O · · · · ·
-· O X · · · · ·
-· X X · · · · ·
-· O O · · · · ·
-· O X O X X · ·
-
-b = [[0,0,0,0,0,0,0],[2,2,1,2,2,0,0],[1,2,1,1,2,0,0],[2,0,0,0,0,0,0],[1,0,0,0,0,0,0],[1,0,0,0,0,0,0],[1,0,0,0,0,0,0],[0,0,0,0,0,0,0]]
-· · · · · · · ·
-· · · · · · · ·
-· O O · · · · ·
-· O X · · · · ·
-· X X · · · · ·
-· O O · · · · ·
-· O X O X X X ·
+b = [[2,2,1,2,1,0],[1,2,1,2,2,1],[0,0,0,0,0,0],[2,2,1,1,1,2],[1,2,1,1,2,1],[0,0,0,0,0,0],[1,2,1,2,2,1]]
+· X · O X · X
+X O · X O · O
+O O · X X · O
+X X · X X · X
+O O · O O · O
+O X · O X · X
 -}
 
 {- Smart ideas:
@@ -121,24 +110,70 @@ greedyCol board
 
 --Returns a valid column selected by the smart algorithm
 smartCol board
-    | not $ null weWin = head weWin
-    | not $ null make3noLoss = head make3noLoss
-    | not $ null make2noLoss = head make2noLoss
-    | not $ null stopEnemyWin = head stopEnemyWin
-    | not $ null make3 = head make3
-    | not $ null make2 = head make2
-    | otherwise = head cols
+    | not $ null weWin = middle weWin board
+
+    | not $ null make3spacedSafeStop = middle make3spacedSafeStop board
+    | not $ null make3safeStop = middle make3safeStop board
+    | not $ null make2safeStop = middle make2safeStop board
+    | not $ null safeStopEnemyWin = middle safeStopEnemyWin board
+    | not $ null stopEnemyWin = middle stopEnemyWin board
+    
+    | not $ null spaced3combined = middle spaced3combined board
+    | not $ null rivalMake3spaced = middle rivalMake3spaced board
+    | not $ null make3spacedRival3 = middle make3spacedRival3 board
+    | not $ null make3spaced = middle make3spaced board
+    
+    | not $ null make3combined = middle make3combined board
+    | not $ null make2rivalMake3 = middle make2rivalMake3 board
+    | not $ null rivalMake3 = middle rivalMake3 board
+    | not $ null make3 = middle make3 board
+    | not $ null make2 = middle make2 board
+    
+    | not $ null safeCols = middle safeCols board
+    | otherwise = middle cols board
 
     where
-        cols = [x | x <- [0..((boardWidth board)-1)], (correctCol board x)]
-        topLoss = [x | x <- cols, makesNsmart (makeMove 2 x board) x 1 4 , (correctCol (makeMove 2 x board) x)]
-        safeCols = [x | x <- cols, not (x `elem` topLoss)]
-        stopEnemyWin = [x | x <- cols, makesNsmart board x 1 4]
-        weWin = [x | x <- cols, makesNsmart board x 2 4]
+        cols = [x | x <- [0..((boardWidth board)-1)], (correctCol board x)] --Avaliable cols
+        safeCols = [x | x <- cols, (not (correctCol (makeMove 2 x board) x)) || ((correctCol (makeMove 2 x board) x) && (not $ makesNsmart (makeMove 2 x board) x 1 4))] --Cols that don't let the rival use the same col afterwards and win
+        
+        stopEnemyWin = [x | x <- cols, makesNsmart board x 1 4] --Cols that stop the rival from making 4
+        safeStopEnemyWin = intersect safeCols stopEnemyWin --Same as stopEnemyWin but using safeCols
+        weWin = [x | x <- cols, makesNsmart board x 2 4] --Cols in which we win instantly
+        
+        make3spaced = [x | x <- safeCols, makesNspaced board x 2 3] --
+        rivalMake3spaced = [x | x <- safeCols, makesNspaced board x 1 3] --
+        spaced3combined = intersect make3spaced rivalMake3spaced
+        
+        make3spacedRival3 = intersect rivalMake3 make3spaced
+
         make3 = [x | x <- safeCols, makesNsmart board x 2 3]
+        rivalMake3 = [x | x <- safeCols, makesNsmart board x 1 3]
+        make3combined = intersect make3 rivalMake3
+        make2rivalMake3 = intersect make2 rivalMake3
         make2 = [x | x <- safeCols, makesNsmart board x 2 2]
-        make3noLoss = [x | x <- make3, (x `elem` stopEnemyWin)]
-        make2noLoss = [x | x <- make2, (x `elem` stopEnemyWin)]
+        
+        make3spacedSafeStop = intersect make3spaced safeStopEnemyWin
+        make3safeStop = intersect make3 safeStopEnemyWin
+        make2safeStop = intersect make2 safeStopEnemyWin
+
+--List intersection operator
+intersect a b = [x | x <- a, x `elem` b]
+
+--Return the column in list closest to the center of the board
+middle a board
+    | m `elem` a = m
+    | otherwise = middle' (tail a) m (head a)
+    where
+        m = (boardWidth board) `div` 2
+
+middle' a m min
+    | null a = min
+    | otherwise = middle' (tail a) m newMin
+    where
+        minDiff = abs (m - min)
+        h = head a
+        hDiff = abs (m - h)
+        newMin = if (minDiff <= hDiff) then min else h
 
 --Checks if column is valid
 correctCol board col
@@ -245,7 +280,7 @@ getDiagRec board col row dCol dRow count
     | dCol < 0 = (getDiagRec board (col+dCol) (row+dRow) dCol dRow (count-1))++(boardPos board col row):[]
     | otherwise = ((boardPos board col row):[])++(getDiagRec board (col+dCol) (row+dRow) dCol dRow (count-1))
 
---Checks if, given a player, board, column and target line size, a move of the player to the column makes him achieve a linesize of 4 
+--Checks if, given a player, board, column and target line size, a move of the player to the column makes him achieve a linesize of n4 
 makesN :: [[Int]] -> Int -> Int -> Int -> Bool
 makesN board col player n = (makesN' h player n) || (makesN' v player n) || (makesN' uD player n) || (makesN' dD player n)
     where
@@ -261,7 +296,7 @@ makesN' line player n
     where
         target = replicate n player
 
---Modified makesN: When line has free space on both sides, adds one; when space avaliable <4 discards line 
+--Modified makesN: discards if avaliable space is <4 
 makesNsmart :: [[Int]] -> Int -> Int -> Int -> Bool
 makesNsmart board col player n = (makesNsmart' h player n 0) || (makesNsmart' v player n 0) || (makesNsmart' uD player n 0) || (makesNsmart' dD player n 0)
     where
@@ -274,10 +309,27 @@ makesNsmart' :: [Int] -> Int -> Int -> Int -> Bool
 makesNsmart' line player n desp
     | length line < 4 = False
     | length recLine < n = False
-    | otherwise = (take n recLine == target) || (take (n+1) recLine == smartTarget) || (makesNsmart' line player n (desp+1))
+    | otherwise = (take n recLine == target) || (div (sum $ take (n+1) recLine) player == n) || (makesNsmart' line player n (desp+1))
     where
         target = replicate n player
-        smartTarget = [0] ++ (drop 1 target) ++ [0]
+        recLine = drop desp line
+
+--Modified makesNsmart: When line has free space on both sides, adds one; when space avaliable <4 discards line 
+makesNspaced :: [[Int]] -> Int -> Int -> Int -> Bool
+makesNspaced board col player n = (makesNspaced' h player n 0) || (makesNspaced' v player n 0) || (makesNspaced' uD player n 0) || (makesNspaced' dD player n 0)
+    where
+        h = map abs $ getRow board col player
+        v = map abs $ getCol board col player
+        uD = map abs $ getUpDiag board col player
+        dD = map abs $ getDownDiag board col player
+
+makesNspaced' :: [Int] -> Int -> Int -> Int -> Bool
+makesNspaced' line player n desp
+    | length line < 5 = False
+    | length recLine < n + 1 = False
+    | otherwise = (take (n+2) recLine == smartTarget) || (makesNspaced' line player n (desp+1))
+    where
+        smartTarget = [0] ++ (replicate n player) ++ [0]
         recLine = drop desp line
 {-
 --Returns smart max line size for a column move: When line has free space on both sides, adds one; when space avaliable <4 discards line 
