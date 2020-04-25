@@ -1,28 +1,69 @@
 import System.Random
 
---main :: IO Char
--- main program to play the game
+main :: IO ()
+--Main program to play the game
 main = do
-       putStrLn "Board height: " 
-       input2 <- getLine
-       putStrLn "Board width: "
-       input1 <- getLine
-
-       let width = (read input1 :: Int)
-       let height = (read input2 :: Int)
-
-       putStrLn ("Board dimensions: " ++ (show width) ++ " x " ++ (show height))
-
-       putStrLn ("Chips avaliable: " ++ show(width * height))
-
-       putStrLn "First player (1 == human, 2 == computer): " 
-       input3 <- getLine
-       let player = (read input3 :: Int)
+       height <- inputHeight
+       width <- inputWidth
+       strategy <- inputStrategy
+       player <- inputFst
 
        let board = newBoard width height
        turn player board (width * height)
 
---turn :: Int -> [[Int]] -> Int -> IO Char
+inputHeight :: IO Int
+--Asks user for height of the board
+inputHeight = do
+    putStrLn "Board height: "
+    input1 <- getLine
+    let height = (read input1 :: Int)
+    if (height >= 4) then do
+        return height
+    else do
+        putStrLn "Height must be an integer equal or greater than 4. Please enter again."
+        res <- inputHeight
+        return res
+
+inputWidth :: IO Int
+--Asks user for width of the board
+inputWidth = do
+    putStrLn "Board width: "
+    input1 <- getLine
+    let width = (read input1 :: Int)
+    if (width >= 4) then do
+        return width
+    else do
+        putStrLn "Width must be an integer equal or greater than 4. Please enter again."
+        res <- inputWidth
+        return res
+
+inputFst :: IO Int
+--Asks user for first user to play
+inputFst = do
+    putStrLn "First player (1 == human, 2 == computer): "
+    input1 <- getLine
+    let fst = (read input1 :: Int)
+    if ((fst == 1) || (fst == 2)) then do
+        return fst
+    else do
+        putStrLn "Wrong player. Please enter again."
+        res <- inputFst
+        return res
+
+inputStrategy :: IO Int
+--Asks user for strategy used by the computer
+inputStrategy = do
+    putStrLn "Computer strategy (1 == random, 2 == greedy, 3 == smart): "
+    input1 <- getLine
+    let strategy = (read input1 :: Int)
+    if ((strategy > 0) && (strategy < 4)) then do
+        return strategy
+    else do
+        putStrLn "Wrong strategy. Please enter again."
+        res <- inputStrategy
+        return res
+
+turn :: Int -> [[Int]] -> Int -> IO ()
 --Turn
 turn player board movesLeft
     | movesLeft == 0 = do 
@@ -37,7 +78,6 @@ turn player board movesLeft
     | player == 1 = do
         printBoard board
         col <- inputCol board
-        --let col = smartCol' board
         if (makesN board col player 4) then do
             turn 2 (makeMove 1 col board) (-1)
         else do
@@ -45,7 +85,6 @@ turn player board movesLeft
     | otherwise = do
         --col <- randomCol board
         --let col = greedyCol board
-        --threadDelay 1000
         let col = smartCol board
         if (makesN board col player 4) then do
             turn 1 (makeMove 2 col board) (-2)
@@ -57,7 +96,7 @@ inputCol :: [[Int]] -> IO Int
 inputCol board = do
     putStrLn "Column: "
     input1 <- getLine
-    let col = (read input1 :: Int)
+    let col = (read input1 :: Int) 
     if (correctCol board col) then do
         return col
     else do
@@ -157,6 +196,7 @@ middle a board
         m = (boardWidth board) `div` 2
 
 middle' :: [Int] -> Int -> Int -> Int
+--Recursive auxiliary for middle
 middle' a m min
     | null a = min
     | otherwise = middle' (tail a) m newMin
@@ -174,14 +214,13 @@ correctCol board col
     | otherwise = elem 0 (board !! col)
 
 randInt :: Int -> Int -> IO Int
--- randInt low high is an IO action that returns a
--- pseudo-random integer between low and high (both included).
+-- Returns a pseudo-random integer between low and high (both included).
 randInt low high = do
     random <- randomIO :: IO Int
     let result = low + random `mod` (high - low + 1)
     return result
 
---printBoard' :: [[Int]] -> Int -> Int -> IO Char
+printBoard' :: [[Int]] -> Int -> Int -> IO ()
 --Recursive board print
 printBoard' board column line
     | (column == boardWidth board -1) && (line == 0) = do
@@ -194,17 +233,25 @@ printBoard' board column line
         printBoard' board (column + 1) line
     where c = chipPrint $ boardPos board column line
 
---chipPrint :: Int -> Char
+chipPrint :: Int -> String
 --Converts data from the board to a more readable format
 chipPrint n
     | n == 1 = "X"
     | n == 2 = "O"
     | otherwise = "·"
 
---printBoard :: [[Int]] -> IO Char
+printLabels :: Int -> Int -> IO ()
+--Prints the column labels of a board
+printLabels col size
+    | (col == (size - 1)) = do putStrLn (show col)
+    | otherwise = do 
+        putStr ((show col) ++ " ")
+        printLabels (col + 1) size
+
+printBoard :: [[Int]] -> IO ()
 --Funció que imprimeix un board
 printBoard board = do
-    putStrLn "0 1 2 3 4 5 6 7 8 9"
+    printLabels 0 (boardWidth board)
     printBoard' board 0 ((boardHeight board) - 1)
 
 newBoard :: Int -> Int -> [[Int]]
