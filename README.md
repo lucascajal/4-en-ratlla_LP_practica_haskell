@@ -4,4 +4,4 @@ Joc programat en haskell per poder jugar al famós joc del 4 en ratlla contra l'
 
 ## Execució
 
-Per poder executar el joc s'ha de compilar el codi utilitzant la comanda ```bash ghc joc.hs```, i ```bash ./joc``` per executar-lo.
+Per poder executar el joc s'ha de compilar el codi utilitzant la comanda ```ghc joc.hs```, i ```./joc``` per executar-lo.
