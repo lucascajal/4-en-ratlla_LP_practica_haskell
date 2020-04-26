@@ -9,7 +9,7 @@ main = do
        player <- inputFst
 
        let board = newBoard width height
-       turn player board (width * height)
+       turn player board (width * height) strategy
 
 inputHeight :: IO Int
 --Asks user for height of the board
@@ -63,9 +63,9 @@ inputStrategy = do
         res <- inputStrategy
         return res
 
-turn :: Int -> [[Int]] -> Int -> IO ()
---Turn
-turn player board movesLeft
+turn :: Int -> [[Int]] -> Int -> Int -> IO ()
+--Turn function: player performs turn at the indicated board with selected strategy
+turn player board movesLeft strategy
     | movesLeft == 0 = do 
         putStrLn "Game ended in tie! No moves left"
         printBoard board
@@ -79,17 +79,28 @@ turn player board movesLeft
         printBoard board
         col <- inputCol board
         if (makesN board col player 4) then do
-            turn 2 (makeMove 1 col board) (-1)
+            turn 2 (makeMove 1 col board) (-1) strategy
         else do
-            turn 2 (makeMove 1 col board) (movesLeft-1)
+            turn 2 (makeMove 1 col board) (movesLeft-1) strategy
     | otherwise = do
-        --col <- randomCol board
-        --let col = greedyCol board
-        let col = smartCol board
+        col <- chooseCol board strategy
         if (makesN board col player 4) then do
-            turn 1 (makeMove 2 col board) (-2)
+            turn 1 (makeMove 2 col board) (-2) strategy
         else do
-            turn 1 (makeMove 2 col board) (movesLeft-1)
+            turn 1 (makeMove 2 col board) (movesLeft-1) strategy
+
+chooseCol :: [[Int]] -> Int -> IO Int
+--Returns a column chosen by the indicated algorithm
+chooseCol board strategy
+    | strategy == 1 = do
+        col <- randomCol board
+        return col
+    | strategy == 2 = do
+        col <- greedyCol board
+        return col
+    | otherwise = do
+        col <- smartCol board
+        return col
 
 inputCol :: [[Int]] -> IO Int
 --Returns a valid column given by the user
@@ -114,9 +125,21 @@ randomCol board = do
         res <- randomCol board
         return res
 
-greedyCol :: [[Int]] -> Int
+greedyCol :: [[Int]] -> IO Int
 --Returns a valid column selected by a greedy algorithm
-greedyCol board 
+greedyCol board = do
+    let col = greedyCol' board
+    return col
+
+smartCol :: [[Int]] -> IO Int
+--Returns a valid column selected by the smart algorithm
+smartCol board = do
+    let col = smartCol' board
+    return col
+
+greedyCol' :: [[Int]] -> Int
+--Returns a valid column selected by a greedy algorithm
+greedyCol' board 
     | not $ null wewin = head wewin
     | not $ null make3noLoss = head make3noLoss
     | not $ null make2noLoss = head make2noLoss
@@ -134,9 +157,9 @@ greedyCol board
         make3noLoss = [x | x <- make3, (x `elem` stopEnemyWin)]
         make2noLoss = [x | x <- make2, (x `elem` stopEnemyWin)]
 
-smartCol :: [[Int]] -> Int
+smartCol' :: [[Int]] -> Int
 --Returns a valid column selected by the smart algorithm
-smartCol board
+smartCol' board
     | not $ null weWin = middle weWin board
 
     | not $ null make3spacedSafeStop = middle make3spacedSafeStop board
