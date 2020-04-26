@@ -8,4 +8,6 @@ Per poder executar el joc s'ha de compilar el codi utilitzant la comanda ```ghc 
 
 ## Paràmetres inicials
 
-Una vegada començat el joc, se'ns demanaran per onsola diversos paràmetres.
+Una vegada començat el joc, se'ns demanaran per consola diversos paràmetres que definiràn la partida a jugar. Haurem d'introduïr l'alçada del taulell, la seva amplada, l'estratègia que volem que utilitzi l'ordinador i el jugador que farà la primera tirada.
+
+
