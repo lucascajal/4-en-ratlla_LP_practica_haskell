@@ -36,7 +36,7 @@ Una vegada executat el joc, se'ns demanaran per consola diversos paràmetres que
 
 ### Jugar
 
-Cada vegada que ens toqui fer una tirada, ens apareixerà una representació del taulell actual i haurem d'indicar a quina columna volem fer la nostra següent tirada. Les columnes estan identificades a la part superior pel seu índex per facilitar la jugabilitat.
+Cada vegada que ens toqui fer una tirada, ens apareixerà una representació del taulell actual i haurem d'indicar a quina columna volem fer la nostra següent tirada. Les nostres fitxes estan representades per `X` i les de l'ordinador per `O`. Les columnes estan identificades a la part superior pel seu índex per facilitar la jugabilitat.
 
 Una vegada la partida acabi, s'imprimirà un missatge per indicar-ho juntament amb l'estat final del taulell.
 
