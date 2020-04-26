@@ -72,6 +72,8 @@ Tots els conjunts utilitzats a l'estratègia smart són subconjunts del conjunt 
 
 Una vegada trobat el conjunt més prioritari no buit, es retorna la tirada més propera al centre del taulell d'aquest conjunt.
 
+L'ordre de prioritat d'alguns d'aquests conjunts es podria canviar per tal de fer petites modificacions al comportament de l'estratègia. Per exemple, es podria donar més prioritat a fer nosaltres 3 en ratlla que no pas bloquejar un 3 en ratlla del rival. Però després d'un anàlisi de resultats de diferents partides, s'ha decidit prioritzar el bloqueig d'una jugada del contrincant a la realització d'una jugada nostra. Això disminueix la probabilitat de victòries del contrincant en gran mesura, agumenta la probabilitat d'empat i disminueix lleugerament la probabilitat de victòria de l'ordinador.
+
 ## Referències
 1) [VICTOR ALLIS, *A Knowledge-based Approach of Connect-Four*, Master thesis, 1988.](http://www.informatik.uni-trier.de/~fernau/DSL0607/Masterthesis-Viergewinnt.pdf)
 2) [NUMBERPHILE (2013) *Connect Four - Numberphile* (visualitzat el 18 d'abril de 2020)](https://www.youtube.com/watch?v=yDWPi1pZ0Po&t=220s)
