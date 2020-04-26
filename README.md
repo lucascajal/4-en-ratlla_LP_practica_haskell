@@ -28,7 +28,7 @@ Per fer una jugada, es crida a `turn player board movesLeft strategy`, on `playe
 
 ## Implementació d'estratègies
 
-Per implementar les estratègies `greedy` i `smart` s'ha utilitzat un mètode basat en conjunts. Hi ha diverses funcions que, passat el taulell actual, retornen un conjunt de tirades possibles (representat com a llista d'enters) que compleixen certes condicions. També s'ha definit una funció `intersect a b` que, donats dos conjunts `a` i `b`, retorna la seva intersecció.  
+Per implementar les estratègies `greedy` i `smart` s'ha utilitzat un mètode basat en conjunts. Hi ha diverses funcions que, passat el taulell actual, retornen un conjunt de tirades possibles (representat com a llista d'enters) que compleixen certes condicions. També s'ha definit una funció `intersect a b` que, donats dos conjunts `a` i `b`, retorna la seva intersecció. L'idea és obtenir una llista de conjunts, ja sigui mitjançant les funcions directes o la intersecció d'altres conjunts, on cada conjunt contingui totes les tirades possibles que compleixen unes certes condicions. Aquests conjunts estàn ordenats segons les seves condicions, de més prioritàries a menys. Una vegada generats tots els conjunts, agafem el primer conjunt no buit (és a dir, el conjunt més prioritari amb alguna tirada possible) i escollim una tirada d'entre les d'aquest conjunt. 
 
 ### Greedy
 
