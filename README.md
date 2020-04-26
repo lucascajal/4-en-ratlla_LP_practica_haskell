@@ -22,4 +22,4 @@ L'ordinador pot seguir tres estratègies diferents per escollir quines tirades f
 
 ## Referències
 1) [VICTOR ALLIS, *A Knowledge-based Approach of Connect-Four*, Master thesis, 1988.](http://www.informatik.uni-trier.de/~fernau/DSL0607/Masterthesis-Viergewinnt.pdf)
-2) [NUMBERPHILE (2013) *Connect Four - Numberphile* (visualitzat el 18 d'Abril de 2020)](https://www.youtube.com/watch?v=yDWPi1pZ0Po&t=220s)
+2) [NUMBERPHILE (2013) *Connect Four - Numberphile* (visualitzat el 18 d'abril de 2020)](https://www.youtube.com/watch?v=yDWPi1pZ0Po&t=220s)
