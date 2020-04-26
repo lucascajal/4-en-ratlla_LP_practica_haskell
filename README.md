@@ -44,9 +44,31 @@ Llista de conjunts (ordenades de més a menys prioritat):
 - `make2`: Tirades amb les que fem 2 en ratlla.
 - `cols`: Totes les tirades vàlides possibles.
 
+Tots els conjunts utilitzats a l'estratègia greedy són subconjunts del conjunt `cols`
+
 Una vegada trobat el conjunt més prioritari no buit, es retorna la primera tirada d'aquest conjunt.
 
 ### Smart
+Llista de conjunts (ordenades de més a menys prioritat):
+- `wewin`: Tirades amb les que guanyem la partida.
+- `make3spacedSafeStop`: Tirades amb les que bloquejem una tirada guanyadora de l'oponent i fem 3 en ratlla, amb espais lliures a ambes bandes. que no permeten a l'oponent guanyar posant una fitxa just a sobre.
+- `make3safeStop`: Tirades amb les que bloquejem una tirada guanyadora de l'oponent i fem 3 en ratlla. que no permeten a l'oponent guanyar posant una fitxa just a sobre.
+- `make2safeStop`: Tirades amb les que bloquejem una tirada guanyadora de l'oponent i fem 2 en ratlla. que no permeten a l'oponent guanyar posant una fitxa just a sobre.
+- `safeStopEnemyWin`: Tirades amb les que bloquejem una tirada guanyadora de l'oponent i que no permeten a l'oponent guanyar posant una fitxa just a sobre.
+- `stopEnemyWin`: Tirades amb les que bloquejem una tirada guanyadora de l'oponent.
+- `spaced3combined`: Tirades amb les que evitem que l'oponent faci 3 en ratlla amb espais lliures a ambes bandes i fem nosaltres 3 en ratlla amb espais lliures a ambes bandes.
+- `rivalMake3spaced`: Tirades amb les que evitem que l'oponent faci 3 en ratlla amb espais lliures a ambes bandes.
+- `make3spacedRival3`: Tirades amb les que evitem que l'oponent faci 3 en ratlla i fem nosaltres 3 en ratlla amb espais lliures a ambes bandes.
+- `make3spaced`: Tirades amb les que fem 3 en ratlla amb espais lliures a ambes bandes.
+- `make3combined`: Tirades amb les que evitem que l'oponent faci 3 en ratlla i fem nosaltres 3 en ratlla.
+- `make2rivalMake3`: Tirades amb les que evitem que l'oponent faci 3 en ratlla i fem nosaltres 2 en ratlla.
+- `rivalMake3`: Tirades amb les que evitem que l'oponent faci 3 en ratlla.
+- `make3`: Tirades amb les que fem 3 en ratlla.
+- `make2`: Tirades amb les que fem 2 en ratlla.
+- `safeCols`: Totes les tirades vàlides possibles que no permeten a l'oponent guanyar posant una fitxa just a sobre.
+- `cols`: Totes les tirades vàlides possibles.
+
+Tots els conjunts utilitzats a l'estratègia smart són subconjunts del conjunt `cols` !!!!
 
 Una vegada trobat el conjunt més prioritari no buit, es retorna la tirada més propera al centre del taulell d'aquest conjunt.
 
