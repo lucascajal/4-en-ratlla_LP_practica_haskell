@@ -28,12 +28,27 @@ Per fer una jugada, es crida a `turn player board movesLeft strategy`, on `playe
 
 ## Implementació d'estratègies
 
-Per implementar les estratègies `greedy` i `smart` s'ha utilitzat un mètode basat en conjunts. Hi ha diverses funcions que, passat el taulell actual, retornen un conjunt de tirades possibles (representat com a llista d'enters) que compleixen certes condicions. També s'ha definit una funció `intersect a b` que, donats dos conjunts `a` i `b`, retorna la seva intersecció. L'idea és obtenir una llista de conjunts, ja sigui mitjançant les funcions directes o la intersecció d'altres conjunts, on cada conjunt contingui totes les tirades possibles que compleixen unes certes condicions. Aquests conjunts estàn ordenats segons les seves condicions, de més prioritàries a menys. Una vegada generats tots els conjunts, agafem el primer conjunt no buit (és a dir, el conjunt més prioritari amb alguna tirada possible) i escollim una tirada d'entre les d'aquest conjunt. A continuació es descriu detalladament quins són aquests conjunts i el seu ordre per a cada estratègia.
+Per implementar les estratègies `greedy` i `smart` s'ha utilitzat un mètode basat en conjunts. Hi ha diverses funcions que, passat el taulell actual, retornen un conjunt de tirades possibles (representat com a llista d'enters) que compleixen certes condicions. També s'ha definit una funció `intersect a b` que, donats dos conjunts `a` i `b`, retorna la seva intersecció. 
+
+L'idea és obtenir una llista de conjunts, ja sigui mitjançant les funcions directes o la intersecció d'altres conjunts, on cada conjunt contingui totes les tirades possibles que compleixen unes certes condicions. Aquests conjunts estàn ordenats segons les seves condicions, de més prioritàries a menys. Una vegada generats tots els conjunts, agafem el primer conjunt no buit (és a dir, el conjunt més prioritari amb alguna tirada possible) i escollim una tirada d'entre les d'aquest conjunt. 
+
+A continuació es descriu detalladament quins són aquests conjunts i el seu ordre per a cada estratègia.
 
 ### Greedy
+Llista de conjunts (ordenades de més a menys prioritat):
+`wewin`: Tirades amb les que guanyem la partida.
+`make3noLoss`: Tirades amb les que bloquejem una tirada guanyadora de l'oponent i fem 3 en ratlla `()` <!-- [3, 5) \cap [4, 6] = [4, 5) -->
+`make2noLoss`: Tirades amb les que bloquejem una tirada guanyadora de l'oponent i fem 2 en ratlla.
+`stopEnemyWin`: Tirades amb les que bloquejem una tirada guanyadora de l'oponent.
+`make3`: Tirades amb les que fem 3 en ratlla.
+`make2`: Tirades amb les que fem 2 en ratlla.
+`cols`: Totes les tirades vàlides possibles.
 
+Una vegada trobat el conjunt més prioritari no buit, es retorna la primera tirada d'aquest conjunt.
 
 ### Smart
+
+Una vegada trobat el conjunt més prioritari no buit, es retorna la tirada més propera al centre del taulell d'aquest conjunt.
 
 ## Referències
 1) [VICTOR ALLIS, *A Knowledge-based Approach of Connect-Four*, Master thesis, 1988.](http://www.informatik.uni-trier.de/~fernau/DSL0607/Masterthesis-Viergewinnt.pdf)
