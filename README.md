@@ -106,6 +106,10 @@ L'ordre de prioritat d'alguns d'aquests conjunts es podria canviar per tal de fe
 1) [VICTOR ALLIS, *A Knowledge-based Approach of Connect-Four*, Master thesis, 1988.](http://www.informatik.uni-trier.de/~fernau/DSL0607/Masterthesis-Viergewinnt.pdf)
 2) [NUMBERPHILE (2013) *Connect Four - Numberphile* (visualitzat el 18 d'abril de 2020)](https://www.youtube.com/watch?v=yDWPi1pZ0Po&t=220s)
 
+## Enunciat
+
+https://github.com/jordi-petit/lp-quatre-en-ratlla/blob/master/README.md
+
 ## Autor
 
 **Lucas Cajal**
