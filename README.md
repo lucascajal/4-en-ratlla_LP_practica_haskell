@@ -22,7 +22,7 @@ L'ordinador pot seguir tres estratègies diferents per escollir quines tirades f
 
 ## Representació de la partida
 
-Per poder representar el taulell, s'ha utilitzat una matriu d'enters `([[Int]])`, de dimensions `m` x `n`.
+Per poder representar el taulell, s'ha utilitzat una matriu d'enters, de dimensions `m` x `n`. Les posicions buides están marcades amb `0`, les ocupades per una fitxa del jugador amb un `1` i les ocupades per una fitxa de l'ordinador amb un `2`. Per fer una jugada, es crida a `turn player board movesLeft strategy`, on `player` ens indica a qui li toca jugar, `board` és el taulell actual i `strategy` l'estrategia seguida per l'ordinador. El paràmetre `movesLeft` ens indica quantes tirades més es poden fer, per tant el seu valor inicial és `n`x`m`, i a cada tirada se li resta una unitat. Si a la jugada que s'acaba de fer un jugador guanya, es passa el indicador d'aquest jugador en negatiu (`-1` per l'humà, `-2` per l'ordinador) com a valor de `movesLeft`. Per tant, quan a una jugada el valor de `movesLeft` sigui un `0`, la partida haurà acabat en empat. Si el valor és `-1`, haurà guanyat la partida el jugador humà, i si és `-2` haurà guanyat l'ordinador. Per a qualsevol altre valor la partida no estarà acabada i per tant es farà un nou moviment, ja sigui demanant al jugador una tirada per consola o generant des de l'ordinador una tirada seguint l'estratègia indicada al paràmetre `strategy`.
 
 ### Greedy
 
