@@ -2,13 +2,49 @@
 
 Joc programat en haskell per poder jugar al famós joc del 4 en ratlla contra l'ordinador.
 
-## Compilació i execució
+## Utilització
 
-Per poder executar el joc s'ha de compilar el codi utilitzant la comanda ```ghc joc.hs```, i ```./joc``` per executar-lo.
+### Prerequisits
 
-## Paràmetres inicials
+El programa utilitza el paquet `random`. Per instalar-lo en Mac:
+
+```bash
+> brew install cabal-install
+> cabal update
+> cabal install --lib random
+```
+
+En Ubuntu:
+
+```bash
+> sudo apt install cabal-install
+> cabal update
+> cabal install random
+```
+
+### Compilació
+
+Només cal executar la comanda `ghc joc.hs`.
+
+### Execució
+
+Per executar el programa s'ha d'utilitzar la comanda `./joc`.
+
+### Paràmetres inicials
 
 Una vegada executat el joc, se'ns demanaran per consola diversos paràmetres que definiran la partida a jugar. Haurem d'introduir l'alçada del taulell, la seva amplada, l'estratègia que volem que utilitzi l'ordinador i el jugador que farà la primera tirada.
+
+### Jugar
+
+Cada vegada que ens toqui fer una tirada, ens apareixerà una representació del taulell actual i haurem d'indicar a quina columna volem fer la nostra següent tirada. Les columnes estàn identificades a la part superior per el seu índex per facilitar la jugabilitat.
+
+Una vegada la partida acabi, s'imprimirà un missatge per indicar-ho juntament amb l'estat final del taulell.
+
+## Representació de la partida
+
+Per poder representar el taulell, s'ha utilitzat una matriu d'enters, de dimensions `m` x `n`. Les posicions buides estan marcades amb `0`, les ocupades per una fitxa del jugador amb un `1` i les ocupades per una fitxa de l'ordinador amb un `2`. 
+
+Per fer una jugada, es crida a `turn player board movesLeft strategy`, on `player` ens indica a qui li toca jugar, `board` és el taulell actual i `strategy` l'estratègia  seguida per l'ordinador. El paràmetre `movesLeft` ens indica quantes tirades més es poden fer, per tant el seu valor inicial és `n`x`m`, i a cada tirada se li resta una unitat. Si a la jugada que s'acaba de fer un jugador guanya, es passa l'indicador d'aquest jugador en negatiu (`-1` per l'humà, `-2` per l'ordinador) com a valor de `movesLeft`. Per tant, quan a una jugada el valor de `movesLeft` sigui un `0`, la partida haurà acabat en empat. Si el valor és `-1`, haurà guanyat la partida el jugador humà, i si és `-2` haurà guanyat l'ordinador. Per a qualsevol altre valor la partida no estarà acabada i per tant es farà un nou moviment, ja sigui demanant al jugador una tirada per consola o generant des de l'ordinador una tirada seguint l'estratègia indicada al paràmetre `strategy`.
 
 ## Estratègies de l'ordinador
 
@@ -19,14 +55,6 @@ L'ordinador pot seguir tres estratègies diferents per escollir quines tirades f
 - **`Greedy`:** A cada jugada l'ordinador intenta posar el màxim nombre de fitxes en línia, però evitant que el contrincant pugui fer 4 en ratlla. 
 
 - **`Smart`:** L'ordinador escull una jugada tenint en compte tant les seves jugades potencials com les del contrincant. Sempre intenta apropar-se a una victòria mentre alhora bloqueja jugades de l'oponent, però en cas de no poder fer ambdues coses prioritza bloquejar al contrincant. Quan hi ha més d'una columna que compleixen les mateixes condicions, prioritza aquella més propera al centre del taulell, ja que tal com s'ha demostrat [(1)](https://github.com/lucascajal/LP_practica_haskell/blob/master/README.md#refer%C3%A8ncies), tirar fitxes a les columnes més properes al centre augmenta la probabilitat de victòria.
-
-## Representació de la partida
-
-Per poder representar el taulell, s'ha utilitzat una matriu d'enters, de dimensions `m` x `n`. Les posicions buides estan marcades amb `0`, les ocupades per una fitxa del jugador amb un `1` i les ocupades per una fitxa de l'ordinador amb un `2`. 
-
-Per fer una jugada, es crida a `turn player board movesLeft strategy`, on `player` ens indica a qui li toca jugar, `board` és el taulell actual i `strategy` l'estratègia  seguida per l'ordinador. El paràmetre `movesLeft` ens indica quantes tirades més es poden fer, per tant el seu valor inicial és `n`x`m`, i a cada tirada se li resta una unitat. Si a la jugada que s'acaba de fer un jugador guanya, es passa l'indicador d'aquest jugador en negatiu (`-1` per l'humà, `-2` per l'ordinador) com a valor de `movesLeft`. Per tant, quan a una jugada el valor de `movesLeft` sigui un `0`, la partida haurà acabat en empat. Si el valor és `-1`, haurà guanyat la partida el jugador humà, i si és `-2` haurà guanyat l'ordinador. Per a qualsevol altre valor la partida no estarà acabada i per tant es farà un nou moviment, ja sigui demanant al jugador una tirada per consola o generant des de l'ordinador una tirada seguint l'estratègia indicada al paràmetre `strategy`.
-
-## Implementació d'estratègies
 
 Per implementar les estratègies `greedy` i `smart` s'ha utilitzat un mètode basat en conjunts. Hi ha diverses funcions que, passat el taulell actual, retornen un conjunt de tirades possibles (representat com a llista d'enters) que compleixen certes condicions. També s'ha definit una funció `intersect a b` que, donats dos conjunts `a` i `b`, retorna la seva intersecció. 
 
@@ -77,3 +105,7 @@ L'ordre de prioritat d'alguns d'aquests conjunts es podria canviar per tal de fe
 ## Referències
 1) [VICTOR ALLIS, *A Knowledge-based Approach of Connect-Four*, Master thesis, 1988.](http://www.informatik.uni-trier.de/~fernau/DSL0607/Masterthesis-Viergewinnt.pdf)
 2) [NUMBERPHILE (2013) *Connect Four - Numberphile* (visualitzat el 18 d'abril de 2020)](https://www.youtube.com/watch?v=yDWPi1pZ0Po&t=220s)
+
+## Autor
+
+**Lucas Cajal**
