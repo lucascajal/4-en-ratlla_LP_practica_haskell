@@ -54,8 +54,8 @@ Llista de conjunts (ordenades de més a menys prioritat):
 - `make3spacedSafeStop`: Tirades amb les que bloquejem una tirada guanyadora de l'oponent i fem 3 en ratlla, amb espais lliures a ambes bandes.
 - `make3safeStop`: Tirades amb les que bloquejem una tirada guanyadora de l'oponent i fem 3 en ratlla.
 - `make2safeStop`: Tirades amb les que bloquejem una tirada guanyadora de l'oponent i fem 2 en ratlla.
-- `safeStopEnemyWin`: Tirades amb les que bloquejem una tirada guanyadora de l'oponent i que no permeten a l'oponent guanyar posant una fitxa just a sobre.
-- `stopEnemyWin`: Tirades amb les que bloquejem una tirada guanyadora de l'oponent.
+- `safeStopEnemyWin`: Tirades amb les que bloquejem una tirada guanyadora de l'oponent.
+- `stopEnemyWin`: Tirades amb les que bloquejem una tirada guanyadora de l'oponent sense comprovar si permeten a l'oponent guanyar posant una fitxa just a sobre.
 - `spaced3combined`: Tirades amb les que evitem que l'oponent faci 3 en ratlla amb espais lliures a ambes bandes i fem nosaltres 3 en ratlla amb espais lliures a ambes bandes.
 - `rivalMake3spaced`: Tirades amb les que evitem que l'oponent faci 3 en ratlla amb espais lliures a ambes bandes.
 - `make3spacedRival3`: Tirades amb les que evitem que l'oponent faci 3 en ratlla i fem nosaltres 3 en ratlla amb espais lliures a ambes bandes.
