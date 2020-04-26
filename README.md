@@ -6,7 +6,7 @@ Joc programat en haskell per poder jugar al famós joc del 4 en ratlla contra l'
 
 ### Prerequisits
 
-El programa utilitza el paquet `random`. Per instalar-lo en Mac:
+El programa utilitza el paquet `random`. Per fer la instal·lació en Mac:
 
 ```bash
 > brew install cabal-install
@@ -36,7 +36,7 @@ Una vegada executat el joc, se'ns demanaran per consola diversos paràmetres que
 
 ### Jugar
 
-Cada vegada que ens toqui fer una tirada, ens apareixerà una representació del taulell actual i haurem d'indicar a quina columna volem fer la nostra següent tirada. Les columnes estàn identificades a la part superior per el seu índex per facilitar la jugabilitat.
+Cada vegada que ens toqui fer una tirada, ens apareixerà una representació del taulell actual i haurem d'indicar a quina columna volem fer la nostra següent tirada. Les columnes estan identificades a la part superior pel seu índex per facilitar la jugabilitat.
 
 Una vegada la partida acabi, s'imprimirà un missatge per indicar-ho juntament amb l'estat final del taulell.
 
