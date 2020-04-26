@@ -37,9 +37,9 @@ A continuació es descriu detalladament quins són aquests conjunts i el seu ord
 ### Greedy
 Llista de conjunts (ordenades de més a menys prioritat):
 - `wewin`: Tirades amb les quals guanyem la partida.
-- `make3noLoss`: Tirades amb les quals bloquejem una tirada guanyadora de l'oponent i fem 3 en ratlla.
-- `make2noLoss`: Tirades amb les quals bloquejem una tirada guanyadora de l'oponent i fem 2 en ratlla.
-- `stopEnemyWin`: Tirades amb les quals bloquejem una tirada guanyadora de l'oponent.
+- `make3noLoss`: Tirades amb les quals bloquegem una tirada guanyadora de l'oponent i fem 3 en ratlla.
+- `make2noLoss`: Tirades amb les quals bloquegem una tirada guanyadora de l'oponent i fem 2 en ratlla.
+- `stopEnemyWin`: Tirades amb les quals bloquegem una tirada guanyadora de l'oponent.
 - `make3`: Tirades amb les quals fem 3 en ratlla.
 - `make2`: Tirades amb les quals fem 2 en ratlla.
 - `cols`: Totes les tirades vàlides possibles.
