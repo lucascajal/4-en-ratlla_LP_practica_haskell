@@ -51,11 +51,11 @@ Una vegada trobat el conjunt més prioritari no buit, es retorna la primera tira
 ### Smart
 Llista de conjunts (ordenades de més a menys prioritat):
 - `wewin`: Tirades amb les quals guanyem la partida.
-- `make3spacedSafeStop`: Tirades amb les quals bloquejem una tirada guanyadora de l'oponent i fem 3 en ratlla, amb espais lliures a ambes bandes.
-- `make3safeStop`: Tirades amb les quals bloquejem una tirada guanyadora de l'oponent i fem 3 en ratlla.
-- `make2safeStop`: Tirades amb les quals bloquejem una tirada guanyadora de l'oponent i fem 2 en ratlla.
-- `safeStopEnemyWin`: Tirades amb les quals bloquejem una tirada guanyadora de l'oponent.
-- `stopEnemyWin`: Tirades amb les quals bloquejem una tirada guanyadora de l'oponent sense comprovar si permeten a l'oponent guanyar posant una fitxa just a sobre.
+- `make3spacedSafeStop`: Tirades amb les quals bloquegem una tirada guanyadora de l'oponent i fem 3 en ratlla, amb espais lliures a ambdues bandes.
+- `make3safeStop`: Tirades amb les quals bloquegem una tirada guanyadora de l'oponent i fem 3 en ratlla.
+- `make2safeStop`: Tirades amb les quals bloquegem una tirada guanyadora de l'oponent i fem 2 en ratlla.
+- `safeStopEnemyWin`: Tirades amb les quals bloquegem una tirada guanyadora de l'oponent.
+- `stopEnemyWin`: Tirades amb les quals bloquegem una tirada guanyadora de l'oponent sense comprovar si permeten a l'oponent guanyar posant una fitxa just a sobre.
 - `spaced3combined`: Tirades amb les quals evitem que l'oponent faci 3 en ratlla amb espais lliures a ambdues bandes i fem nosaltres 3 en ratlla amb espais lliures a ambdues bandes.
 - `rivalMake3spaced`: Tirades amb les quals evitem que l'oponent faci 3 en ratlla amb espais lliures a ambdues bandes.
 - `make3spacedRival3`: Tirades amb les quals evitem que l'oponent faci 3 en ratlla i fem nosaltres 3 en ratlla amb espais lliures a ambdues bandes.
