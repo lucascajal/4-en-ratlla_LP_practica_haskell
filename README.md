@@ -1,6 +1,4 @@
-# Practica de Haskell: 4 en ratlla.
-#### Lucas Cajal
-#### Grup de laboratori 13
+# Practica de Haskell: 4 en ratlla
 
 Joc programat en haskell per poder jugar al famós joc del 4 en ratlla contra l'ordinador.
 
