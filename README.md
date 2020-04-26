@@ -14,11 +14,11 @@ Una vegada començat el joc, se'ns demanaran per consola diversos paràmetres qu
 
 L'ordinador pot seguir tres estratègies diferents per escollir quines tirades fer: `random`, `greedy` i `smart`. Totes les estratègies reben com a paràmetre el taulell en el moment de fer la tirada i retornen una columna vàlida on tirar la següent fitxa. Una columna vàlida és aquella que està dins del taulell (0 <= columna < amplada del taulell) i que té al menys un espai lliure, és a dir, que no està plena de fitxes. El funcionament resumit de les diferents estratègies és el següent:
 
-- **`Random`:** Escull una columna a l'atzar.
+- **`Random`:** Escull una jugada a l'atzar.
 
-- **`Greedy`:** A cada tirada l'ordinador intenta posar el màxim nombre de fitxes en linia, però evitant que el contrincant pugui fer 4 en ratlla. 
+- **`Greedy`:** A cada jugada l'ordinador intenta posar el màxim nombre de fitxes en linia, però evitant que el contrincant pugui fer 4 en ratlla. 
 
-- **`Smart`:** L'ordinador escull una columna tenint en compte tant les seves jugades potencials com les del contrincant. Sempre intenta apropar-se a una victòria mentre alhora bloqueja jugades de l'oponent, però en cas de no poder fer ambdues coses prioritza bloquejar al contrincant. Quan hi ha més d'una columna que compleixen les mateixes condicions, prioritza aquella més cercana al centre del taulell, ja que tal i com s'ha demostrat [(1)](https://github.com/lucascajal/LP_practica_haskell/blob/master/README.md#refer%C3%A8ncies), tirar fitxes a les columnes més properes al centre augmenta la possibilitat de victòria.
+- **`Smart`:** L'ordinador escull una jugada tenint en compte tant les seves jugades potencials com les del contrincant. Sempre intenta apropar-se a una victòria mentre alhora bloqueja jugades de l'oponent, però en cas de no poder fer ambdues coses prioritza bloquejar al contrincant. Quan hi ha més d'una columna que compleixen les mateixes condicions, prioritza aquella més propera al centre del taulell, ja que tal i com s'ha demostrat [(1)](https://github.com/lucascajal/LP_practica_haskell/blob/master/README.md#refer%C3%A8ncies), tirar fitxes a les columnes més properes al centre augmenta la probabilitat de victòria.
 
 ## Representació de la partida
 
