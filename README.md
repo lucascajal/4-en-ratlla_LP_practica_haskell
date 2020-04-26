@@ -21,5 +21,5 @@ L'ordinador pot seguir tres estratègies diferents per escollir quines tirades f
 - **`Smart`:** L'ordinador escull una columna tenint en compte tant les seves jugades potencials com les del contrincant. Sempre intenta apropar-se a una victòria mentre alhora bloqueja jugades de l'oponent, però en cas de no poder fer ambdues coses prioritza bloquejar al contrincant. Quan hi ha més d'una columna que compleixen les mateixes condicions, prioritza aquella més cercana al centre del taulell, ja que tal i com s'ha demostrat [(1)](http://www.informatik.uni-trier.de/~fernau/DSL0607/Masterthesis-Viergewinnt.pdf), tirar fitxes a les columnes més properes al centre augmenta la possibilitat de victòria.
 
 ## Referències
+1) [Victor Allis, *A Knowledge-based Approach of Connect-Four*, Master thesis, 1988.](http://www.informatik.uni-trier.de/~fernau/DSL0607/Masterthesis-Viergewinnt.pdf)
 https://www.youtube.com/watch?v=yDWPi1pZ0Po&t=220s
-http://www.informatik.uni-trier.de/~fernau/DSL0607/Masterthesis-Viergewinnt.pdf
