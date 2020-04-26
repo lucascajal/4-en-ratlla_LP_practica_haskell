@@ -22,7 +22,7 @@ L'ordinador pot seguir tres estratègies diferents per escollir quines tirades f
 
 ## Representació de la partida
 
-Per poder representar el taulell, s'ha utilitzat una matriu d'enters ```haskell [[Int]]```, de dimensions `m` x `n`.
+Per poder representar el taulell, s'ha utilitzat una matriu d'enters `([[Int]])`, de dimensions `m` x `n`.
 
 ### Greedy
 
