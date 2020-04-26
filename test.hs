@@ -183,12 +183,12 @@ smartCol' board
     | otherwise = middle cols board
 
     where
-        cols = [x | x <- [0..((boardWidth board)-1)], (correctCol board x)] --Avaliable cols
+        cols = [x | x <- [0..((boardWidth board)-1)], (correctCol board x)]
         safeCols = [x | x <- cols, (not (correctCol (makeMove 2 x board) x)) || ((correctCol (makeMove 2 x board) x) && (not $ makesNsmart (makeMove 2 x board) x 1 4))] --Cols that don't let the rival use the same col afterwards and win
         
-        stopEnemyWin = [x | x <- cols, makesNsmart board x 1 4] --Cols that stop the rival from making 4
-        safeStopEnemyWin = intersect safeCols stopEnemyWin --Same as stopEnemyWin but using safeCols
-        weWin = [x | x <- cols, makesNsmart board x 2 4] --Cols in which we win instantly
+        stopEnemyWin = [x | x <- cols, makesNsmart board x 1 4]
+        safeStopEnemyWin = intersect safeCols stopEnemyWin
+        weWin = [x | x <- cols, makesNsmart board x 2 4]
         
         make3spaced = [x | x <- safeCols, makesNspaced board x 2 3] --
         rivalMake3spaced = [x | x <- safeCols, makesNspaced board x 1 3] --
