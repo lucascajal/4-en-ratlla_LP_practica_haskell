@@ -113,3 +113,5 @@ https://github.com/jordi-petit/lp-quatre-en-ratlla/blob/master/README.md
 ## Autor
 
 **Lucas Cajal**
+
+## Nota: 9 sobre 10
