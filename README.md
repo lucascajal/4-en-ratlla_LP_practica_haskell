@@ -114,4 +114,6 @@ https://github.com/jordi-petit/lp-quatre-en-ratlla/blob/master/README.md
 
 **Lucas Cajal**
 
+www.lucascajal.com
+
 **Nota de la pràctica: 9 sobre 10**
